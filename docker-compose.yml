@@ -35,6 +35,16 @@ services:
     networks:
       - laravel
 
+  python-app:
+    build:
+      context: ./AI-server
+      dockerfile: Dockerfile
+    ports:
+      - "5001:6996"
+    volumes:
+      - ./AI-server:/usr/src/app
+    networks:
+      - laravel
 
 
 

@@ -44,7 +44,7 @@ class WebCamScreenPhoto extends Screen
     {
         return [ Button::make('Upload Photos')
             ->icon('upload')
-            ->method('upload')];
+            ->method('upload')->rawClick()];
     }
 
     /**
@@ -70,24 +70,26 @@ class WebCamScreenPhoto extends Screen
     {
         $photos = $request->file('photos');
         $data = [];
-        foreach ($photos as $photo) {
-            $data[] = [
-                'name'     => 'photos[]',
-                'contents' => fopen($photo->getPathname(), 'r'),
-                'filename' => $photo->getClientOriginalName()
-            ];
-        }
 
-        dd($data);
         // URL to your Python server handling the processing
-        $url = 'http://your-python-server.com/process';
+        $url = 'http://python-app:5000/image';
 
         // Send a multipart/form-data POST request
-        $response = Http::attach('photos', $photos)->post($url);
+        $response = Http::asMultipart();
+
+        // Добавление каждого фото в форму запроса
+        foreach ($photos as $photo) {
+            $response->attach(
+                'images', // Имя поля в запросе, должно совпадать с ожидаемым Flask-приложением
+                file_get_contents($photo->getPathname()), // Содержимое файла
+                $photo->getClientOriginalName() // Исходное имя файла
+            );
+        }
+
+        $response = $response->post($url);
 
         // Assuming the response body is a direct binary data of ZIP file
         $zipContents = $response->body();
-
         return response()->streamDownload(function () use ($zipContents) {
             echo $zipContents;
         }, 'processed_photos.zip', ['Content-Type' => 'application/zip']);

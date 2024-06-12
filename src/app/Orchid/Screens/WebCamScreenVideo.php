@@ -12,7 +12,9 @@ use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Upload;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
+use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class WebCamScreenVideo extends Screen
 {
@@ -93,7 +95,7 @@ class WebCamScreenVideo extends Screen
         $url = Storage::disk('public')->url($path);
 
         // Сохранение URL в сессии для доступа при рендере страницы
-        session()->flash('videoUrl', $url);
+        session()->put('videoUrl', $url);
 
         return redirect()->route('platform.video');
     }
@@ -102,10 +104,10 @@ class WebCamScreenVideo extends Screen
     {
         // Получение списка email сотрудников (пример)
         $employees = User::select('email')->get();
-        // Эмуляция отправки уведомлений сотрудникам
-        session()->flash('notifiedUsers', $employees);
         // Очистка сессии для URL видео
-        session()->forget('videoUrl');
+//        session()->forget('videoUrl');
+        Toast::success('Уведомления отправлены сотрудникам')
+            ->delay(2000);
 
         return redirect()->route('platform.video')->with('message', 'Уведомление о дроне отправлено сотрудникам');
     }
