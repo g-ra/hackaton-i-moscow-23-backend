@@ -31,6 +31,7 @@ services:
       - "9001:9000"
     volumes:
       - ./src:/var/www/html:delegated
+      - ./dockerfiles/php.ini:/usr/local/etc/php/php.ini
     networks:
       - laravel
 
