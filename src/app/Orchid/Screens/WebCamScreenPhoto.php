@@ -32,7 +32,7 @@ class WebCamScreenPhoto extends Screen
      */
     public function name(): ?string
     {
-        return 'WebCamScreenPhoto';
+        return 'Проверка фото';
     }
 
     /**

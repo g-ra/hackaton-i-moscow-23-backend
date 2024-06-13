@@ -1,4 +1,8 @@
-Flask
-numpy
-opencv-python
-Werkzeug
+Flask==3.0.3
+numpy==1.23.5
+opencv-python==4.9.0.80
+Werkzeug==3.0.3
+git+https://github.com/THU-MIG/yolov10.git
+supervision==0.20.0
+roboflow
+huggingface_hub

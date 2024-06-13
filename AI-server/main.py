@@ -61,7 +61,7 @@ def uploadfiles():
     photos_predict.pics_to_text()
 
     zip_path = os.path.join(ZIP_FOLDER, zip_filename)
-    
+
     with zipfile.ZipFile(zip_path, 'w') as zipf:
         for file in uploaded_files:
                 # Добавляем файл в ZIP-архив
@@ -76,15 +76,15 @@ def uploadfiles():
 
 @app.route("/video", methods=["POST"])
 def upload_video():
-
+    print('here')
     uploaded_files = request.files.getlist("videos")  # Получаем список всех файлов с ключом "images"
 
     if not uploaded_files:
         return {"message": "No files provided"}, 400
-    
+
     clear_folders([VIDEO_TEMP,VIDEO_STORAGE])
-    
-    
+
+
     for file in uploaded_files:
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         video_name = f"Video_{hash(file.filename)}_{timestamp}.mp4"
@@ -96,7 +96,7 @@ def upload_video():
 
 
         # Отправляем видео пользователю
-        return json_data,video_path#timeline, full path get video file_name 
+        return json_data,video_path#timeline, full path get video file_name
     
 @app.route("/get_video/{file_name}",methods=[""])
 def gen_link(file_name):

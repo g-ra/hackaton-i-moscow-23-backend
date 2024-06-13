@@ -1,5 +1,5 @@
 # Используем официальный базовый образ Python
-FROM python:3.8-slim
+FROM python:3.9-slim
 
 # Установка рабочей директории в контейнере
 WORKDIR /usr/src/app
@@ -11,11 +11,13 @@ RUN apt-get update && apt-get install -y \
     libsm6 \
     libxrender1 \
     libxext6 \
+    git \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Копирование файла зависимостей и установка зависимостей
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Копирование остальных файлов проекта
 COPY . .
