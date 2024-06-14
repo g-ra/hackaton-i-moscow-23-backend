@@ -110,11 +110,11 @@ def gen_link(file_path):
         # Проверка на недопустимые символы или попытки выхода за пределы директории
       if not file_path or ".." in file_path or file_path.startswith("/"):
         app.logger.error("Invalid file path.")
-        abort(400, description="Invalid file path provided.")
+        return {"message": "File not found"}, 404
 
       if not os.path.exists(file_path):
-              app.logger.error(f"File not found: {file_path}")
-              return {"message": "File not found"}, 404
+        app.logger.error(f"File not found: {file_path}")
+        return {"message": "File not found"}, 404
       file_size = os.path.getsize(file_path)
       app.logger.debug(f"File size for {file_path}: {file_size} bytes")
 
