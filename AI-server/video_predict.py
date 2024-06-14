@@ -167,11 +167,12 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    #print([frame_height,frame_width])
+
+
     if save_video:
-        fourcc = cv2.VideoWriter_fourcc(*'avc1')
+        fourcc = cv2.VideoWriter_fourcc(*'vp09')
         out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
-    # start_time = time.time()
+
     frame_count = 0
 
     zoom_memory = deque([[0,0,0,0]],maxlen=mem_frames)
@@ -184,15 +185,11 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
             zoom_memory.append(f_b)
 
         mem_bb = np.median(np.array(list(zoom_memory)),axis=0).astype(int)
-    
-        # if len(zoom_memory)>1:
-        #     cv2.rectangle(frame, (mem_bb[0], mem_bb[1]), (mem_bb[2], mem_bb[3]), (255, 0, 255), 2)
-        
-       
+
         if not ret:
             break
         try:
-            results = model.predict(frame, conf=0.25,iou=0.8, imgsz=640, verbose=False)#, tracker= "botsort.yaml") #tracker="bytetrack.yaml")
+            results = model.predict(frame, conf=0.25,iou=0.8, imgsz=640, verbose=False)
             
             if len(zoom_memory)>1:
                 results_zoom = model.predict(frame[mem_bb[1]:mem_bb[3], mem_bb[0]:mem_bb[2]],conf=0.25,iou=0.8, imgsz=640, verbose=False)
@@ -229,13 +226,21 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
                         if cls in scary_classes:
                             logger.debug(cls)
                             logger.debug(int(frame_count/fps))
-                            danger_json.append(
-                                {
-                                    "cls":int(cls),
-                                    "time":int(frame_count/fps)
-                                }
-                            )
-
+                            if len(danger_json)>0:
+                                if danger_json[-1]["time"]!= int(frame_count/fps):
+                                    danger_json.append(
+                                        {
+                                            "cls":int(cls),
+                                            "time":int(frame_count/fps)
+                                        }
+                                    )
+                            else:
+                                danger_json.append(
+                                        {
+                                            "cls":int(cls),
+                                            "time":int(frame_count/fps)
+                                        }
+                                    )
                         color = (255,255,255)
                         cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3],), color, 2)
                         cv2.putText(
@@ -251,6 +256,24 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
                     
                 for box, cls, conf   in zip(boxes, classes,confid):
 
+                    if cls in scary_classes:
+                        logger.debug(cls)
+                        logger.debug(int(frame_count/fps))
+                        if len(danger_json)>0:
+                            if danger_json[-1]["time"]!= int(frame_count/fps):
+                                danger_json.append(
+                                    {
+                                        "cls":int(cls),
+                                        "time":int(frame_count/fps)
+                                    }
+                                )
+                        else:
+                            danger_json.append(
+                                    {
+                                        "cls":int(cls),
+                                        "time":int(frame_count/fps)
+                                    }
+                                )
                     
                     color = (255,0,0)
                     cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3],), color, 2)

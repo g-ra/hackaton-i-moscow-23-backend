@@ -7,19 +7,9 @@ import glob
 import zipfile
 import logging
 
-
-import photos_predict
-import video_predict as video_predict
-
-app = Flask(__name__)
-logging.basicConfig(level=logging.DEBUG)
-# Загрузите предварительно обученную модель для детектирования объектов
-#net = cv2.dnn.readNetFromCaffe('path/to/caffemodel/prototxt', 'path/to/caffemodel/caffemodel')
-
 UPLOAD_FOLDER = 'uploads'
 EXPORT_FOLDER = "export"
 ZIP_FOLDER = 'zip'
-
 VIDEO_STORAGE = 'Video_lib'
 VIDEO_TEMP = 'Video_temp'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -27,6 +17,12 @@ os.makedirs(EXPORT_FOLDER, exist_ok=True)
 os.makedirs(ZIP_FOLDER, exist_ok=True)
 os.makedirs(VIDEO_STORAGE, exist_ok=True)
 os.makedirs(VIDEO_TEMP, exist_ok=True)
+
+import photos_predict
+import video_predict as video_predict
+
+app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 def clear_folders(directory):
     for d in directory:
