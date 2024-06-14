@@ -169,7 +169,7 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     #print([frame_height,frame_width])
     if save_video:
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        fourcc = cv2.VideoWriter_fourcc(*'avc1')
         out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
     # start_time = time.time()
     frame_count = 0
