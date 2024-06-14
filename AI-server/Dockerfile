@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libxext6 \
     git \
+    ffmpeg \
+    x264 \
+    libx264-dev \
+    python3-opencv \
     && rm -rf /var/lib/apt/lists/*
 
 

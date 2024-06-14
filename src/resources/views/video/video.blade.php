@@ -1,7 +1,26 @@
+<head>
 
+
+    <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+    <!-- <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script> -->
+</head>
 @if(!empty($video))
-    <video controls height="500" width="100%" loop>
-        <source src="{{ $video->path }}" type="video/mp4">
-        Your browser does not support the video tag.
+    <video
+
+        controls
+
+        width="99%"
+        height="400px"
+
+    >
+        <source src="http://localhost:8181/stream-video?videoName={{ $video->path }}" />
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a
+            web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank"
+            >supports HTML5 video</a
+            >
+        </p>
     </video>
 @endif
+

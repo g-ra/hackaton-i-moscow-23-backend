@@ -14,7 +14,7 @@ services:
     ports:
       - "8181:80"
     volumes:
-      - ./src:/var/www/html:delegated
+      - ./src:/var/www/html
     depends_on:
       - php
     networks:
@@ -30,7 +30,7 @@ services:
     ports:
       - "9001:9000"
     volumes:
-      - ./src:/var/www/html:delegated
+      - ./src:/var/www/html
       - ./dockerfiles/php.ini:/usr/local/etc/php/php.ini
     networks:
       - laravel

@@ -115,7 +115,7 @@ def gen_link(file_path):
       app.logger.debug(f"File size for {file_path}: {file_size} bytes")
 
 
-      return send_file(file_path, mimetype="video/mp4",)
+      return send_file(file_path, mimetype="video/mp4",as_attachment=True,)
 
 if __name__ == '__main__':
     app.run(debug=True,port=6966)

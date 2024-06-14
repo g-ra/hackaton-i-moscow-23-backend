@@ -110,21 +110,32 @@ class WebCamScreenVideo extends Screen
 
     public function upload(Request $request)
     {
+        // Получаем файл из запроса
         $video = $request->file('raw_file');
 
         // Сохранение временного файла
         $path = $video->store('tmp/videos', 'public');
 
-        // Путь для доступа к файлу
-        $url = Storage::disk('public')->url($path);
+        // Путь к физическому файлу на сервере
+        $filePath = Storage::disk('public')->path($path);
 
-        $response = Http::attach(
-            'videos', // Имя поля в форме
-            file_get_contents($video->getRealPath()), // Содержимое файла
-            $video->getClientOriginalName() // Оригинальное имя файла
-        )->timeout(500)->post('http://python-app:5000/video');
+        try {
+            // Создание HTTP-запроса с использованием multipart формы
+            $response = Http::asMultipart()->attach(
+                'videos', // Имя поля в форме
+                file_get_contents($filePath), // Содержимое файла
+                basename($filePath) // Имя файла
+            )->timeout(50)->post('http://python-app:5000/video');
 
-        dd($response);
+            $videoModel = new Video();
+            $videoModel->filename = $video->getClientOriginalName();
+            $videoModel->metadata = $response->json()['json'];
+            $videoModel->path = $response->json()['video_path'];
+            $videoModel->save();
+        } catch (\Exception $e) {
+            // Обработка возможных ошибок
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function confirmDrone()
