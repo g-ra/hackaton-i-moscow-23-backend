@@ -1,20 +1,16 @@
 from ultralytics import YOLOv10
 import os 
-import glob
+
 # Load a model
 model = YOLOv10("best_yolo10b_200it.pt")  # pretrained YOLOv8n model
-directory = "uploads/"
-save_dir = "export/"
-pics = os.listdir(directory)
 
-
-
-
+DIRECTORY = "uploads/"
+SAVE_DIR = "export/"
 
 
 def write_output_file(bboxes, filename,full=True):
 
-    with open(save_dir+filename, 'w') as f:
+    with open(SAVE_DIR+filename, 'w') as f:
         if full:
                 
             for bbox in bboxes:
@@ -25,10 +21,9 @@ def write_output_file(bboxes, filename,full=True):
 
 def pics_to_text():
     # Run batched inference on a list of images
-
-
+    pics = os.listdir(DIRECTORY)
     for pic in pics:
-        results = model(source=directory+pic,stream=True)  # return a list of Results objects
+        results = model(source=DIRECTORY+pic,stream=True)  # return a list of Results objects
 
         # Process results list
         for result in results:
@@ -44,7 +39,6 @@ def pics_to_text():
 
             else:
                 write_output_file(None, f"{pic[:-3]}txt",full=False)
-        # write_output_file(bboxes=None,filename= f"{pic[:-3]}.txt",full=False)
 
 
-    return save_dir
+    return SAVE_DIR
