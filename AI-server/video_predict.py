@@ -6,6 +6,8 @@ from collections import deque
 import json
 import os
 import warnings
+import logging
+logger = logging.getLogger(__name__)
 # Ignore numpy's VisibleDeprecationWarning only
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 # Example usage:
@@ -15,10 +17,13 @@ model.fuse()
 
 def preprocess(frame):
 
+    logger.info(f"preprocess")
+
     # Grayscale
     try:
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     except Exception:
+        logger.info('вот тут')
         return frame
     
     mn = np.quantile(gray_frame,0.5)
@@ -148,12 +153,15 @@ def compare_boxes(list1, list2,add_list):
 
 def process_video_with_compete(model = model, input_video_path = None, mem_frames=8, show_video=False, save_video=True, output_video_path="output_video.mp4"):
     #
+    logger = logging.getLogger(__name__)
+    logger.info(f"Starting video processing for: {input_video_path}")
+
     scary_classes=[3,4]
     # Open the input video file
     cap = cv2.VideoCapture(input_video_path)
 
     if not cap.isOpened():
-        raise Exception("Error: Could not open video file.")
+        logger.info("Error: Could not open video file.")
 
     # Get input video frame rate and dimensions
     fps = int(cap.get(cv2.CAP_PROP_FPS))
@@ -190,7 +198,7 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
                 results_zoom = model.predict(frame[mem_bb[1]:mem_bb[3], mem_bb[0]:mem_bb[2]],conf=0.25,iou=0.8, imgsz=640, verbose=False)
             else: results_zoom = None
         except Exception as e:
-            print(str(e)[:200])
+            logger.debug(str(e)[:200])
     
 
         
@@ -219,6 +227,8 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
                     
                     for box, cls, conf,flag in winner:
                         if cls in scary_classes:
+                            logger.debug(cls)
+                            logger.debug(int(frame_count/fps))
                             danger_json.append(
                                 {
                                     "cls":int(cls),
@@ -266,7 +276,7 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
 
             cv2.imshow("frame", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        if not ret:
             break
 
     # Release the input video capture and output video writer
@@ -276,6 +286,7 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
 
     # Close all OpenCV windows
     cv2.destroyAllWindows()
+
     return output_video_path, json.dumps(danger_json)#json_path
 
 

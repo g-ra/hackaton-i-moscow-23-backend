@@ -6,3 +6,4 @@ git+https://github.com/THU-MIG/yolov10.git
 supervision==0.20.0
 roboflow
 huggingface_hub
+ultralytics==8.1.34

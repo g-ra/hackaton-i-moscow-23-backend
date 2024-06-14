@@ -5,13 +5,14 @@ from datetime import datetime
 import os
 import glob
 import zipfile
+import logging
 
 
 import photos_predict
 import video_predict as video_predict
 
 app = Flask(__name__)
-
+logging.basicConfig(level=logging.DEBUG)
 # Загрузите предварительно обученную модель для детектирования объектов
 #net = cv2.dnn.readNetFromCaffe('path/to/caffemodel/prototxt', 'path/to/caffemodel/caffemodel')
 
@@ -76,38 +77,49 @@ def uploadfiles():
 
 @app.route("/video", methods=["POST"])
 def upload_video():
-    print('here')
-    uploaded_files = request.files.getlist("videos")  # Получаем список всех файлов с ключом "images"
+    try:
+        app.logger.debug('1')
+        uploaded_files = request.files.getlist("videos")
 
-    if not uploaded_files:
-        return {"message": "No files provided"}, 400
+        if not uploaded_files:
+            return {"message": "No files provided"}, 400
+        app.logger.debug('2')
 
-    clear_folders([VIDEO_TEMP,VIDEO_STORAGE])
+        for file in uploaded_files:
+            app.logger.debug('3')
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            video_name = f"Video_{hash(file.filename)}_{timestamp}.mp4"
+            if file:
+                app.logger.debug('4')
+                file_path = os.path.join(VIDEO_TEMP, video_name)
+                app.logger.debug('5')
+                file.save(file_path)
+                app.logger.debug('6')
+                video_path, json_data = video_predict.process_video_with_compete(input_video_path=file_path, output_video_path=os.path.join(VIDEO_STORAGE, video_name))
+                app.logger.debug('7')
+
+        return {"json":json_data, "video_path":'/get_video/'+video_path}, 200
+    except Exception as e:
+        app.logger.debug(f"An error occurred: {e}")
+        return {"message": "An error occurred during video processing"}, 500
+
+@app.route("/get_video/<path:file_path>",methods=["GET"])
+def gen_link(file_path):
+      app.logger.debug(f"Requested file path: {file_path}")
+
+        # Проверка на недопустимые символы или попытки выхода за пределы директории
+      if not file_path or ".." in file_path or file_path.startswith("/"):
+        app.logger.error("Invalid file path.")
+        abort(400, description="Invalid file path provided.")
+
+      if not os.path.exists(file_path):
+              app.logger.error(f"File not found: {file_path}")
+              return {"message": "File not found"}, 404
+      file_size = os.path.getsize(file_path)
+      app.logger.debug(f"File size for {file_path}: {file_size} bytes")
 
 
-    for file in uploaded_files:
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        video_name = f"Video_{hash(file.filename)}_{timestamp}.mp4"
-        if file:  # Проверяем, был ли файл действительно отправлен
-            file_path = os.path.join(VIDEO_TEMP, video_name)
-            file.save(file_path)  # Сохраняем файл
-
-            video_path,json_data = video_predict.process_video_with_compete(input_video_path=file_path, output_video_path=os.path.join(VIDEO_STORAGE, video_name))
-
-
-        # Отправляем видео пользователю
-        return json_data,video_path#timeline, full path get video file_name
-    
-@app.route("/get_video/{file_name}",methods=[""])
-def gen_link(file_name):
-
-    if not file_name:
-        return {"message": "No files"}, 400
-
-    return send_file(file_name, mimetype="video/mp4",)
-
-
-
+      return send_file(file_path, mimetype="video/mp4",)
 
 if __name__ == '__main__':
     app.run(debug=True,port=6966)
