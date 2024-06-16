@@ -89,7 +89,9 @@ class WebCamScreenVideo extends Screen
                         return ModalToggle::make('View')
                             ->modal('asyncVideoModal')
                             ->modalTitle('Video Details')
-                            ->asyncParameters(['video' => $video->id]);
+                            ->asyncParameters(['video' => $video->id])
+                            ->applyButton('Подтвердить наличие дрона')
+                            ->closeButton('Close');
                     }),
             ]),
             Layout::modal('asyncVideoModal', [
