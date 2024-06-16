@@ -22,7 +22,7 @@
     </video>
     <div id="video-controls">
         @php
-            $times = array_column(json_decode($video->path, true), 'time');
+            $times = array_column(json_decode($video->metadata, true), 'time');
             $uniqueTimes = array_unique($times);
             sort($uniqueTimes);
         @endphp
