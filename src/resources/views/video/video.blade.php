@@ -30,5 +30,12 @@
             <button onclick="seekTo({{ $time }})">{{ gmdate("H:i:s", $time) }}</button>
         @endforeach
     </div>
+    <script>
+        function seekTo(time) {
+            var video = document.getElementById('myVideo');
+            video.currentTime = time;
+            video.play();
+        }
+    </script>
 @endif
 
