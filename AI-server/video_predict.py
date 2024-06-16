@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # Ignore numpy's VisibleDeprecationWarning only
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 # Example usage:
-model = YOLOv10('best_yolo10b_200it.pt')
+model = YOLOv10('best_yolo_v10_100_final.pt')
 
 model.fuse()
 
@@ -308,7 +308,7 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
         out.release()
 
     # Close all OpenCV windows
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
     return output_video_path, json.dumps(danger_json)#json_path
 

@@ -22,7 +22,7 @@ import photos_predict
 import video_predict as video_predict
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(filename='logs.txt', level=logging.DEBUG)
 
 def clear_folders(directory):
     for d in directory:
