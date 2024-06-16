@@ -189,10 +189,10 @@ def process_video_with_compete(model = model, input_video_path = None, mem_frame
         if not ret:
             break
         try:
-            results = model.predict(frame, conf=0.25,iou=0.8, imgsz=640, verbose=False)
+            results = model.predict(frame, conf=0.25,iou=0.8, imgsz=640, verbose=False,device="cuda:0")
             
             if len(zoom_memory)>1:
-                results_zoom = model.predict(frame[mem_bb[1]:mem_bb[3], mem_bb[0]:mem_bb[2]],conf=0.25,iou=0.8, imgsz=640, verbose=False)
+                results_zoom = model.predict(frame[mem_bb[1]:mem_bb[3], mem_bb[0]:mem_bb[2]],conf=0.25,iou=0.8, imgsz=640, verbose=False,device="cuda:0")
             else: results_zoom = None
         except Exception as e:
             logger.debug(str(e)[:200])

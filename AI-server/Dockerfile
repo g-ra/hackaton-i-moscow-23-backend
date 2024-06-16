@@ -51,4 +51,5 @@ ENV FLASK_ENV=development
 # Использование базового образа с поддержкой CUDA
 
 # Запуск приложения при старте контейнера
-CMD ["conda", "run", "-n", "env", "flask", "run", "--host=0.0.0.0", "--debug"]
+CMD ["conda", "run", "-n", "env", "flask", "run", "--host=0.0.0.0" ]
+#"--debug"
