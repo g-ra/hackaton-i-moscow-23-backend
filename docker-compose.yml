@@ -1,7 +1,6 @@
 
 networks:
   laravel:
-    external: true
 
 
 services:
