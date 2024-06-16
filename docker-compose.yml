@@ -1,7 +1,8 @@
-version: '3'
 
 networks:
   laravel:
+    external: true
+
 
 services:
   app:
@@ -45,6 +46,13 @@ services:
       - ./AI-server:/usr/src/app
     networks:
       - laravel
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [ gpu ]
+              count: 1  # You can use 'all' to use all GPUs
 
 
 
