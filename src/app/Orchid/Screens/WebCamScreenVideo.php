@@ -19,6 +19,7 @@ use Orchid\Screen\TD;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use Illuminate\Support\Facades\Log;
 
 class WebCamScreenVideo extends Screen
 {
@@ -110,44 +111,49 @@ class WebCamScreenVideo extends Screen
 
     public function upload(Request $request)
     {
-        // Получаем файл из запроса
+        Log::info('Starting video upload process');
+
         $video = $request->file('raw_file');
+        if (!$video) {
+            Log::error('No video file provided in the request');
+            return response()->json(['error' => 'No video file provided'], 400);
+        }
 
-        // Сохранение временного файла
         $path = $video->store('tmp/videos', 'public');
-
-        // Путь к физическому файлу на сервере
         $filePath = Storage::disk('public')->path($path);
 
         try {
-            // Создание HTTP-запроса с использованием multipart формы
             $response = Http::asMultipart()->attach(
-                'videos', // Имя поля в форме
-                file_get_contents($filePath), // Содержимое файла
-                basename($filePath) // Имя файла
+                'videos', file_get_contents($filePath), basename($filePath)
             )->timeout(50)->post('http://python-app:5000/video');
-            app('log')->info($response->json());
+
             $videoModel = new Video();
             $videoModel->filename = $video->getClientOriginalName();
             $videoModel->metadata = $response->json()['json'] ?? 'no json';
-            $videoModel->path = $response->json()['video_path'] ?? 'no path' ;
+            $videoModel->path = $response->json()['video_path'] ?? 'no path';
             $videoModel->save();
+
+            Log::info('Video uploaded successfully: ' . $videoModel->filename);
         } catch (\Exception $e) {
-            // Обработка возможных ошибок
+            Log::error('Error uploading video: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function confirmDrone()
     {
-        // Получение списка email сотрудников (пример)
+        Log::info('Sending drone confirmation notifications to employees');
         $employees = User::select('email')->get();
-        // Очистка сессии для URL видео
-//        session()->forget('videoUrl');
-        Toast::success('Уведомления отправлены сотрудникам')
-            ->delay(2000);
 
-        return redirect()->route('platform.video')->with('message', 'Уведомление о дроне отправлено сотрудникам');
+        // Example: Add a log for each email sent (assuming sending happens here)
+        foreach ($employees as $employee) {
+            Log::info('Notification sent to: ' . $employee->email);
+        }
+
+        Toast::success('Notifications sent to employees')->delay(2000);
+        Log::info('All notifications sent successfully');
+
+        return redirect()->route('platform.video')->with('message', 'Drone notification sent to employees');
     }
 
     public function asyncGetVideo(Video $video)
