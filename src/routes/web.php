@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('platform.video');
+    return view('welcome');
 });
 
 Route::get('/stream-video', [\App\Http\Controllers\VideoStreamController::class, 'streamVideo']);
