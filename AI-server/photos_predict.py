@@ -32,7 +32,7 @@ def pics_to_text():
         for result in results:
 
             if result != None:
-                boxes = result.boxes.xywh.cpu().numpy().astype(int)  # Boxes object for bounding box outputs
+                boxes = result.boxes.xywhn.cpu().numpy().astype(float)  # Boxes object for bounding box outputs
                 classes =  result.boxes.cls.cpu().numpy().astype(int)
                 bboxes = []
                 for cls, box in zip(classes,boxes):
