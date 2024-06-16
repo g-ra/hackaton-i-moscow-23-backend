@@ -125,7 +125,7 @@ class WebCamScreenVideo extends Screen
         try {
             $response = Http::asMultipart()->attach(
                 'videos', file_get_contents($filePath), basename($filePath)
-            )->timeout(50)->post('http://python-app:5000/video');
+            )->timeout(50000000)->post('http://python-app:5000/video');
 
             $videoModel = new Video();
             $videoModel->filename = $video->getClientOriginalName();
