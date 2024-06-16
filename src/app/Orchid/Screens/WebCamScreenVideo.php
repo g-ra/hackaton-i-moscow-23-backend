@@ -89,6 +89,8 @@ class WebCamScreenVideo extends Screen
                         return ModalToggle::make('View')
                             ->modal('asyncVideoModal')
                             ->modalTitle('Video Details')
+                            ->rawClick()
+                            ->method('confirmDrone')
                             ->asyncParameters(['video' => $video->id]);
                     }),
             ]),
@@ -144,18 +146,18 @@ class WebCamScreenVideo extends Screen
 
     public function confirmDrone()
     {
-        Log::info('Sending drone confirmation notifications to employees');
-        $employees = User::select('email')->get();
-
-        // Example: Add a log for each email sent (assuming sending happens here)
-        foreach ($employees as $employee) {
-            Log::info('Notification sent to: ' . $employee->email);
-        }
+//        Log::info('Sending drone confirmation notifications to employees');
+//        $employees = User::select('email')->get();
+//
+//        // Example: Add a log for each email sent (assuming sending happens here)
+//        foreach ($employees as $employee) {
+//            Log::info('Notification sent to: ' . $employee->email);
+//        }
 
         Toast::success('Notifications sent to employees')->delay(2000);
         Log::info('All notifications sent successfully');
 
-        return redirect()->route('platform.video')->with('message', 'Drone notification sent to employees');
+//        return redirect()->route('platform.video')->with('message', 'Drone notification sent to employees');
     }
 
     public function asyncGetVideo(Video $video)
