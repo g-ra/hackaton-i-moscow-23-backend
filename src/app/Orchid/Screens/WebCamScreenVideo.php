@@ -126,11 +126,11 @@ class WebCamScreenVideo extends Screen
                 file_get_contents($filePath), // Содержимое файла
                 basename($filePath) // Имя файла
             )->timeout(50)->post('http://python-app:5000/video');
-
+            app('log')->info($response->json());
             $videoModel = new Video();
             $videoModel->filename = $video->getClientOriginalName();
-            $videoModel->metadata = $response->json()['json'];
-            $videoModel->path = $response->json()['video_path'];
+            $videoModel->metadata = $response->json()['json'] ?? 'no json';
+            $videoModel->path = $response->json()['video_path'] ?? 'no path' ;
             $videoModel->save();
         } catch (\Exception $e) {
             // Обработка возможных ошибок
