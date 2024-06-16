@@ -7,6 +7,7 @@
 @if(!empty($video))
 
     <video
+        id="myVideo"
         controls
         width="99%"
         height="400px"
